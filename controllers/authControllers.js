@@ -1,10 +1,10 @@
-const crypto = require('crypto');
-const { promisify } = require('util');
-const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
-const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
-const Email = require('../utils/email');
+import crypto from 'crypto';
+import { promisify } from 'util';
+import jwt from 'jsonwebtoken';
+import User from '../models/userModel.js';
+import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
+import Email from '../utils/email.js';
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -36,7 +36,7 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
-exports.signup = catchAsync(async (req, res, next) => {
+export const signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -52,11 +52,11 @@ exports.signup = catchAsync(async (req, res, next) => {
   createSendToken(newUser, 201, res);
 });
 
-exports.login = catchAsync(async (req, res, next) => {
+export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // check if email and password are given by the user
-  if (!email && !password) {
+  if (!email || !password) {
     return next(new AppError('Please enter email and password', 400));
   }
 
@@ -70,7 +70,7 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-exports.protect = catchAsync(async (req, res, next) => {
+export const protect = catchAsync(async (req, res, next) => {
   // check if token exists
   let token;
   // console.log(req.headers);
@@ -117,7 +117,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.isLoggedIn = async (req, res, next) => {
+export const isLoggedIn = async (req, res, next) => {
   try {
     if (req.cookies.jwt) {
       // Verify token
@@ -128,14 +128,10 @@ exports.isLoggedIn = async (req, res, next) => {
 
       // check if user still exists
       const currentUser = await User.findById(decoded.id);
-      if (!currentUser) {
-        return next();
-      }
+      if (!currentUser) return next();
 
       // check if user changed his password
-      if (currentUser.changedPasswordAfter(decoded.iat)) {
-        return next();
-      }
+      if (currentUser.changedPasswordAfter(decoded.iat)) return next();
 
       // User is Logged In
       res.locals.user = currentUser;
@@ -147,9 +143,8 @@ exports.isLoggedIn = async (req, res, next) => {
   next();
 };
 
-exports.restrictTo = (...roles) => {
+export const restrictTo = (...roles) => {
   return (req, res, next) => {
-    // roles[admin, lead-guide]
     if (!roles.includes(req.user.role)) {
       return next(
         new AppError('You do not have permission to perform this action', 403)
@@ -160,7 +155,7 @@ exports.restrictTo = (...roles) => {
   };
 };
 
-exports.forgotPassword = catchAsync(async (req, res, next) => {
+export const forgotPassword = catchAsync(async (req, res, next) => {
   // find user based on email
   const user = await User.findOne({ email: req.body.email });
 
@@ -189,7 +184,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     });
   } catch (err) {
     user.passwordResetToken = undefined;
-    user.passwordResetExpires - undefined;
+    user.passwordResetExpires = undefined;
     await user.save({ validateModifiedOnly: true });
 
     return next(
@@ -201,7 +196,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   }
 });
 
-exports.resetPassword = catchAsync(async (req, res, next) => {
+export const resetPassword = catchAsync(async (req, res, next) => {
   // Get user based on the token
   const hashedToken = crypto
     .createHash('sha256')
@@ -230,13 +225,13 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-exports.updatePassword = catchAsync(async (req, res, next) => {
+export const updatePassword = catchAsync(async (req, res, next) => {
   // Get user from the collection
   const user = await User.findById(req.user.id).select('+password');
 
   // check if posted password is correct
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
-    return next(new AppError('your current password is wrong', 401));
+    return next(new AppError('Your current password is wrong', 401));
   }
 
   // update password
@@ -248,7 +243,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-exports.logout = (req, res) => {
+export const logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
     expiresIn: new Date(Date.now() + 5 * 1000),
     httpOnly: true,

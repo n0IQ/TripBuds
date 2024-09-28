@@ -1,21 +1,22 @@
-const express = require("express");
-const viewController = require("../controllers/viewController");
-const authController = require("../controllers/authControllers");
-const bookingController = require("../controllers/bookingController");
+import express from 'express';
+import {
+  getTour,
+  getLoginForm,
+  getAccount,
+  getMyTours,
+  getOverview,
+} from '../controllers/viewController.js';
+import { isLoggedIn, protect } from '../controllers/authControllers.js';
+import { createBookingCheckout } from '../controllers/bookingController.js';
 
 const router = express.Router();
 
-router.use(authController.isLoggedIn);
+router.use(isLoggedIn);
 
-router.get(
-  "/",
-  bookingController.createBookingCheckout,
-  authController.isLoggedIn,
-  viewController.getOverview
-);
-router.get("/tour/:slug", authController.isLoggedIn, viewController.getTour);
-router.get("/login", authController.isLoggedIn, viewController.getLoginForm);
-router.get("/me", authController.protect, viewController.getAccount);
-router.get("/my-bookings", authController.protect, viewController.getMyTours);
+router.get('/', createBookingCheckout, isLoggedIn, getOverview);
+router.get('/tour/:slug', isLoggedIn, getTour);
+router.get('/login', isLoggedIn, getLoginForm);
+router.get('/me', protect, getAccount);
+router.get('/my-bookings', protect, getMyTours);
 
-module.exports = router;
+export default router;

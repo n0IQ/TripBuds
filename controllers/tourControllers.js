@@ -1,9 +1,9 @@
-const multer = require('multer');
-const sharp = require('sharp');
-const Tour = require('../models/tourModel');
-const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
-const factory = require('./handlerFactory');
+import multer from 'multer';
+import sharp from 'sharp';
+import Tour from '../models/tourModel.js';
+import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
+import * as factory from './handlerFactory.js';
 
 const multerStorage = multer.memoryStorage();
 
@@ -20,12 +20,12 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
-exports.uploadTourImages = upload.fields([
+export const uploadTourImages = upload.fields([
   { name: 'imageCover', maxCount: 1 },
   { name: 'images', maxCount: 3 },
 ]);
 
-exports.resizeTourImages = catchAsync(async (req, res, next) => {
+export const resizeTourImages = catchAsync(async (req, res, next) => {
   if (!req.files.imageCover || !req.files.images) return next();
 
   // Cover image
@@ -56,26 +56,26 @@ exports.resizeTourImages = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.aliasTopTours = (req, res, next) => {
+export const aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
   req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
   next();
 };
 
-exports.getAllTours = factory.getAll(Tour);
+export const getAllTours = factory.getAll(Tour);
 
-exports.getTour = factory.getOne(Tour, {
+export const getTour = factory.getOne(Tour, {
   path: 'reviews',
 });
 
-exports.createTour = factory.createOne(Tour);
+export const createTour = factory.createOne(Tour);
 
-exports.updateTour = factory.updateOne(Tour);
+export const updateTour = factory.updateOne(Tour);
 
-exports.deleteTour = factory.deleteOne(Tour);
+export const deleteTour = factory.deleteOne(Tour);
 
-exports.getTourStats = catchAsync(async (req, res, next) => {
+export const getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
       $match: {
@@ -120,7 +120,7 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
+export const getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
 
   const plan = await Tour.aggregate([
@@ -174,7 +174,7 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
 // Get tours within certain range
 // '/tours-within/:distance/center/:latlng/unit/:unit'
 // /tours-within/250/center/19.126305, 72.890745/unit/mi
-exports.getToursWithin = catchAsync(async (req, res, next) => {
+export const getToursWithin = catchAsync(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
 
@@ -204,7 +204,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getDistances = catchAsync(async (req, res, next) => {
+export const getDistances = catchAsync(async (req, res, next) => {
   const { latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
   const multiplier = unit === 'mi' ? 0.000621371 : 0.001;

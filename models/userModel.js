@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const crypto = require('crypto');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
+import mongoose from 'mongoose';
+import crypto from 'crypto';
+import validator from 'validator';
+import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -111,4 +111,5 @@ userSchema.methods.createPasswordResetToken = function () {
 };
 
 const User = mongoose.model('User', userSchema);
-module.exports = User;
+
+export default User;

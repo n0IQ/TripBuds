@@ -1,9 +1,9 @@
-const Booking = require('../models/bookingModel');
-const Tour = require('../models/tourModel');
-const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
+import Booking from '../models/bookingModel.js';
+import Tour from '../models/tourModel.js';
+import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
 
-exports.getOverview = catchAsync(async (req, res, next) => {
+export const getOverview = catchAsync(async (req, res, next) => {
   const tours = await Tour.find();
 
   res.status(200).render('overview', {
@@ -12,7 +12,7 @@ exports.getOverview = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getTour = catchAsync(async (req, res, next) => {
+export const getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findOne({ slug: req.params.slug }).populate({
     path: 'reviews',
     select: 'review rating user',
@@ -28,19 +28,19 @@ exports.getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getLoginForm = (req, res) => {
+export const getLoginForm = (req, res) => {
   res.status(200).render('login', {
     title: 'Log into your account',
   });
 };
 
-exports.getAccount = (req, res) => {
+export const getAccount = (req, res) => {
   res.status(200).render('account', {
     title: 'Your Account',
   });
 };
 
-exports.getMyTours = catchAsync(async (req, res, next) => {
+export const getMyTours = catchAsync(async (req, res, next) => {
   const bookings = await Booking.find({ user: req.user.id });
 
   const tourIDs = bookings.map((el) => el.tour);

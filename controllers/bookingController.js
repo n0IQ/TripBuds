@@ -1,10 +1,12 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const Booking = require('../models/bookingModel');
-const Tour = require('../models/tourModel');
-const catchAsync = require('../utils/catchAsync');
-const factory = require('./handlerFactory');
+import Stripe from 'stripe';
+import Booking from '../models/bookingModel.js';
+import Tour from '../models/tourModel.js';
+import catchAsync from '../utils/catchAsync.js';
+import * as factory from './handlerFactory.js';
 
-exports.getCheckoutSession = catchAsync(async (req, res, next) => {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+export const getCheckoutSession = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.tourId);
 
   const session = await stripe.checkout.sessions.create({
@@ -39,7 +41,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createBookingCheckout = catchAsync(async (req, res, next) => {
+export const createBookingCheckout = catchAsync(async (req, res, next) => {
   const { tour, user, price } = req.query;
 
   if (!tour || !user || !price) {
@@ -51,12 +53,12 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   res.redirect(req.originalUrl.split('?')[0]);
 });
 
-exports.createBooking = factory.createOne(Booking);
+export const createBooking = factory.createOne(Booking);
 
-exports.getBooking = factory.getOne(Booking);
+export const getBooking = factory.getOne(Booking);
 
-exports.getAllBooking = factory.getAll(Booking);
+export const getAllBooking = factory.getAll(Booking);
 
-exports.updateBooking = factory.updateOne(Booking);
+export const updateBooking = factory.updateOne(Booking);
 
-exports.deleteBooking = factory.deleteOne(Booking);
+export const deleteBooking = factory.deleteOne(Booking);

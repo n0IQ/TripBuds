@@ -1,22 +1,22 @@
-const express = require("express");
-const authController = require("../controllers/authControllers");
-const bookingController = require("../controllers/bookingController");
+import express from 'express';
+import { protect } from '../controllers/authControllers.js';
+import {
+  getCheckoutSession,
+  getAllBooking,
+  createBooking,
+  getBooking,
+  updateBooking,
+  deleteBooking,
+} from '../controllers/bookingController.js';
 
 const router = express.Router();
 
-router.use(authController.protect);
+router.use(protect);
 
-router.get("/checkout-session/:tourId", bookingController.getCheckoutSession);
+router.get('/checkout-session/:tourId', getCheckoutSession);
 
-router
-  .route("/")
-  .get(bookingController.getAllBooking)
-  .post(bookingController.createBooking);
+router.route('/').get(getAllBooking).post(createBooking);
 
-router
-  .route("/:id")
-  .get(bookingController.getBooking)
-  .patch(bookingController.updateBooking)
-  .delete(bookingController.deleteBooking);
+router.route('/:id').get(getBooking).patch(updateBooking).delete(deleteBooking);
 
-module.exports = router;
+export default router;

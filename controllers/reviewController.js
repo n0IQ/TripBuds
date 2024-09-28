@@ -1,19 +1,15 @@
-const Review = require('../models/ReviewModel');
-const factory = require('./handlerFactory');
+import Review from '../models/ReviewModel.js';
+import * as factory from './handlerFactory.js';
 
-exports.setTourUserId = (req, res, next) => {
+export const setTourUserId = (req, res, next) => {
   // Allow Nested Review
   if (!req.body.tour) req.body.tour = req.params.tourId;
   req.body.user = req.user.id;
   next();
 };
 
-exports.getAllReviews = factory.getAll(Review);
-
-exports.getReview = factory.getOne(Review);
-
-exports.createReview = factory.createOne(Review);
-
-exports.updateReview = factory.updateOne(Review);
-
-exports.deleteReview = factory.deleteOne(Review);
+export const getAllReviews = factory.getAll(Review);
+export const getReview = factory.getOne(Review);
+export const createReview = factory.createOne(Review);
+export const updateReview = factory.updateOne(Review);
+export const deleteReview = factory.deleteOne(Review);

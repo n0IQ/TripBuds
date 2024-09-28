@@ -1,8 +1,8 @@
-const nodemailer = require('nodemailer');
-const pug = require('pug');
-const { convert } = require('html-to-text');
+import nodemailer from 'nodemailer';
+import pug from 'pug';
+import { convert } from 'html-to-text';
 
-module.exports = class Email {
+export default class Email {
   constructor(user, url) {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
@@ -44,7 +44,7 @@ module.exports = class Email {
     );
 
     // email options
-    const mailOptoins = {
+    const mailOptions = {
       from: this.from,
       to: this.to,
       subject,
@@ -55,7 +55,7 @@ module.exports = class Email {
     };
 
     // create transport and send email
-    await this.newTransport().sendMail(mailOptoins);
+    await this.newTransport().sendMail(mailOptions);
   }
 
   async sendWelcome() {
@@ -72,4 +72,4 @@ module.exports = class Email {
       'Your password reset token (valid for only 10 minutes)'
     );
   }
-};
+}
