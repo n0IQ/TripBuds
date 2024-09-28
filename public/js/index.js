@@ -1,8 +1,8 @@
-require('@babel/polyfill');
-const { login, logout } = require('./login');
-const { displayMap } = require('./leaflet');
-const { updateSettings } = require('./updateSettings');
-const { bookTour } = require('./stripe');
+import '@babel/polyfill';
+import { login, logout } from './login';
+import { displayMap } from './leaflet';
+import { updateSettings } from './updateSettings';
+import { bookTour } from './stripe';
 
 const leafletBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');

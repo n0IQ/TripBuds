@@ -1,5 +1,5 @@
-const axios = require('axios');
-const { showAlert } = require('./alert');
+import axios from 'axios';
+import { showAlert } from './alert';
 const stripe = Stripe(
   'pk_test_51NFMGzSDbDC0HGSBORR4JL782MdQDXx6TBIOTNTfQxXAe5kiX15uGbB7GVW7GNotJU7r8DpeduUz3BhNPTpHGtDf00MD7uvnvm'
 );
